@@ -46,7 +46,7 @@ static void on_husky_status(const lcm_recv_buf_t *rbuf, const char *channel,
     state_cmd_msg.sender = "husky-status";
     state_cmd_msg.comment = "";
     state_cmd_msg.fault_mask = ERLCM_ROBOT_STATUS_T_FAULT_MASK_NO_CHANGE;
-    state_cmd_msg.state = ERLCM_ROBOT_STATE_COMMAND_T_STATE_STOP;
+    state_cmd_msg.state = ERLCM_ROBOT_STATE_COMMAND_T_STATE_UNDEFINED; //ERLCM_ROBOT_STATE_COMMAND_T_STATE_STOP;
 
     if (msg->e_stop) {
         if (self->verbose)
