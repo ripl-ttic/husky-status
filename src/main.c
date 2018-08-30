@@ -59,14 +59,14 @@ static void on_husky_status(const lcm_recv_buf_t *rbuf, const char *channel,
     }
 
     if (faults) {
-        erlcm_robot_state_command_t state_cmd_msg;
+        ripl_robot_state_command_t state_cmd_msg;
         state_cmd_msg.utime = bot_timestamp_now();
         state_cmd_msg.sender = "husky-status";
         state_cmd_msg.comment = "EStop";
         state_cmd_msg.fault_mask = ERLCM_ROBOT_STATUS_T_FAULT_MASK_NO_CHANGE;
         state_cmd_msg.state = ERLCM_ROBOT_STATE_COMMAND_T_STATE_STOP;
         state_cmd_msg.faults = faults;
-        erlcm_robot_state_command_t_publish (self->lcm, "ROBOT_STATE_COMMAND", &state_cmd_msg);
+        ripl_robot_state_command_t_publish (self->lcm, "ROBOT_STATE_COMMAND", &state_cmd_msg);
         if (self->verbose)
             fprintf (stdout, "Publishing STOP command for robot status\n");
     }
