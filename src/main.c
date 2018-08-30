@@ -45,17 +45,17 @@ static void on_husky_status(const lcm_recv_buf_t *rbuf, const char *channel,
     if (msg->e_stop) {
         if (self->verbose)
             fprintf (stdout, "E-stop enabled --- Setting fault\n");
-        faults |= ERLCM_ROBOT_STATUS_T_FAULT_ESTOP;
+        faults |= RIPL_ROBOT_STATUS_T_FAULT_ESTOP;
     }
     if (msg->lockout) {
         if (self->verbose)
             fprintf (stdout, "Lockout enabled --- Setting fault\n");
-        faults |= ERLCM_ROBOT_STATUS_T_FAULT_LOCKOUT;
+        faults |= RIPL_ROBOT_STATUS_T_FAULT_LOCKOUT;
     }
     if (msg->no_battery) {
         if (self->verbose)
             fprintf (stdout, "No battery indicated --- Setting fault\n");
-        faults |= ERLCM_ROBOT_STATUS_T_FAULT_BATTERY;
+        faults |= RIPL_ROBOT_STATUS_T_FAULT_BATTERY;
     }
 
     if (faults) {
@@ -63,8 +63,8 @@ static void on_husky_status(const lcm_recv_buf_t *rbuf, const char *channel,
         state_cmd_msg.utime = bot_timestamp_now();
         state_cmd_msg.sender = "husky-status";
         state_cmd_msg.comment = "EStop";
-        state_cmd_msg.fault_mask = ERLCM_ROBOT_STATUS_T_FAULT_MASK_NO_CHANGE;
-        state_cmd_msg.state = ERLCM_ROBOT_STATE_COMMAND_T_STATE_STOP;
+        state_cmd_msg.fault_mask = RIPL_ROBOT_STATUS_T_FAULT_MASK_NO_CHANGE;
+        state_cmd_msg.state = RIPL_ROBOT_STATE_COMMAND_T_STATE_STOP;
         state_cmd_msg.faults = faults;
         ripl_robot_state_command_t_publish (self->lcm, "ROBOT_STATE_COMMAND", &state_cmd_msg);
         if (self->verbose)
