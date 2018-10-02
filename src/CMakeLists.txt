@@ -1,5 +1,5 @@
 add_definitions(
-#    -ggdb3 
+#    -ggdb3
     -std=gnu99
     )
 
@@ -8,17 +8,17 @@ include_directories(
     ${LCMTYPES_INCLUDE_DIRS}
     )
 
-add_executable(hr-husky-status main.c)
+add_executable(husky-status main.c)
 
-pods_use_pkg_config_packages(hr-husky-status
+pods_use_pkg_config_packages(husky-status
     glib-2.0
     gthread-2.0
-    lcm 
-    bot2-core 
+    lcm
+    bot2-core
     lcmtypes_hr-lcmtypes
     lcmtypes_bot2-core
     lcmtypes_ros2lcm_bridge
     bot2-param-client)
-    
 
-pods_install_executables(hr-husky-status)
+
+pods_install_executables(husky-status)
