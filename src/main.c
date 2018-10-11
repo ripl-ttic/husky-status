@@ -12,14 +12,14 @@
 #include <bot_param/param_client.h>
 
 #include <lcmtypes/bot2_core.h>
-#include <lcmtypes/hr_lcmtypes.h>
 #include <lcmtypes/ros2lcm_husky_status_t.h>
+#include <lcmtypes/robot_status.h>
 
 #if DEBUG
 #define dbg(...) do { fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__); \
                       fprintf(stderr, __VA_ARGS__); } while(0)
 #else
-#define dbg(...) 
+#define dbg(...)
 #endif
 
 
@@ -41,37 +41,37 @@ static void on_husky_status(const lcm_recv_buf_t *rbuf, const char *channel,
         self->status_prev = ros2lcm_husky_status_t_copy(msg);
 
     int64_t faults = 0;
- 
+
     if (msg->e_stop) {
         if (self->verbose)
             fprintf (stdout, "E-stop enabled --- Setting fault\n");
-        faults |= RIPL_ROBOT_STATUS_T_FAULT_ESTOP;
+        faults |= RSLCM_ROBOT_STATUS_T_FAULT_ESTOP;
     }
     if (msg->lockout) {
         if (self->verbose)
             fprintf (stdout, "Lockout enabled --- Setting fault\n");
-        faults |= RIPL_ROBOT_STATUS_T_FAULT_LOCKOUT;
+        faults |= RSLCM_ROBOT_STATUS_T_FAULT_LOCKOUT;
     }
     if (msg->no_battery) {
         if (self->verbose)
             fprintf (stdout, "No battery indicated --- Setting fault\n");
-        faults |= RIPL_ROBOT_STATUS_T_FAULT_BATTERY;
+        faults |= RSLCM_ROBOT_STATUS_T_FAULT_BATTERY;
     }
 
     if (faults) {
-        ripl_robot_state_command_t state_cmd_msg;
+        rslcm_robot_state_command_t state_cmd_msg;
         state_cmd_msg.utime = bot_timestamp_now();
         state_cmd_msg.sender = "husky-status";
         state_cmd_msg.comment = "EStop";
-        state_cmd_msg.fault_mask = RIPL_ROBOT_STATUS_T_FAULT_MASK_NO_CHANGE;
-        state_cmd_msg.state = RIPL_ROBOT_STATE_COMMAND_T_STATE_STOP;
+        state_cmd_msg.fault_mask = RSLCM_ROBOT_STATUS_T_FAULT_MASK_NO_CHANGE;
+        state_cmd_msg.state = RSLCM_ROBOT_STATE_COMMAND_T_STATE_STOP;
         state_cmd_msg.faults = faults;
-        ripl_robot_state_command_t_publish (self->lcm, "ROBOT_STATE_COMMAND", &state_cmd_msg);
+        rslcm_robot_state_command_t_publish (self->lcm, "ROBOT_STATE_COMMAND", &state_cmd_msg);
         if (self->verbose)
             fprintf (stdout, "Publishing STOP command for robot status\n");
     }
-     
-    
+
+
 }
 
 
@@ -79,7 +79,7 @@ static void on_husky_status(const lcm_recv_buf_t *rbuf, const char *channel,
 static void
 husky_status_destroy(state_t *self)
 {
-    if (self) 
+    if (self)
         free(self);
 }
 
@@ -99,7 +99,7 @@ husky_status_create()
         dbg("Error: husky_status_create() failed to get global lcm object\n");
         goto fail;
     }
-    
+
     bot_glib_mainloop_attach_lcm (self->lcm);
 
     // Subscribe to LCM messages
@@ -107,7 +107,7 @@ husky_status_create()
 
     //g_timeout_add(1000.0/PUBLISH_STATE_HZ, on_timer, self);
 
-    return self; 
+    return self;
 fail:
     husky_status_destroy(self);
     return NULL;
@@ -128,7 +128,7 @@ static void usage(int argc, char ** argv)
 int main(int argc, char ** argv)
 {
     setlinebuf (stdout);
-    
+
     char *optstring = "hv";
     char c;
     struct option long_opts[] = {
@@ -139,10 +139,10 @@ int main(int argc, char ** argv)
     state_t *self = husky_status_create();
     if (!self)
         return 1;
-    
+
     while ((c = getopt_long (argc, argv, optstring, long_opts, 0)) >= 0)
     {
-        switch (c) 
+        switch (c)
         {
         case 'v':
             self->verbose = 1;
@@ -164,7 +164,7 @@ int main(int argc, char ** argv)
 
     /* sit and wait for messages */
     g_main_loop_run(main_loop);
-    
+
     /* clean */
     husky_status_destroy(self);
     return 0;
