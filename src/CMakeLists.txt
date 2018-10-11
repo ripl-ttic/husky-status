@@ -15,7 +15,6 @@ pods_use_pkg_config_packages(husky-status
     gthread-2.0
     lcm
     bot2-core
-    lcmtypes_hr-lcmtypes
     lcmtypes_bot2-core
     lcmtypes_ros2lcm_bridge
     lcmtypes_robot-status
